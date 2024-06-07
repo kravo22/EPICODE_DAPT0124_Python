@@ -1,0 +1,282 @@
+File scelto: owid-covid-data.xlsx
+
+
+• Si richiede di verificare le dimensioni del dataset e i relativi metadati.
+
+
+
+import pandas as pd
+
+# Percorso del file Excel
+file_path = r'C:\Users\aless\Desktop\owid-covid-data.xlsx'
+
+# Carica il file Excel
+df = pd.read_excel(file_path)
+
+# Verifica delle dimensioni del dataset
+rows, columns = df.shape
+print(f"Il dataset ha {rows} righe e {columns} colonne.")
+
+# Ottenimento dei metadati
+print("\nMetadati del dataset:")
+print(df.info())
+
+# Visualizzazione delle prime righe del DataFrame
+print("\nPrime 5 righe del dataset:")
+print(df.head())
+
+
+
+• Si chiede poi per ogni continente di trovare il numero di casi totali avvenuti in quello stesso continente; si chiede di non considerare eventuali locazioni che nel dataset non appartengono ad alcun continente.
+
+
+
+import pandas as pd
+
+# Percorso del file Excel
+file_path = r'C:\Users\aless\Desktop\owid-covid-data.xlsx'
+
+# Carica il file Excel
+df = pd.read_excel(file_path)
+
+# Rimuovi le locazioni che non appartengono ad alcun continente
+df_cleaned = df.dropna(subset=['continent'])
+
+# Raggruppa i dati per continente e somma i casi totali
+continent_cases = df_cleaned.groupby('continent')['total_cases'].sum()
+
+# Visualizza il risultato
+print("Numero di casi totali per continente:")
+print(continent_cases)
+
+
+
+• Sempre riguardo i casi totali, si chiede di scrivere del codice che, date due variabili contenenti i nomi di continenti, ne confronti i seguenti relativi descrittori statistici: valore massimo, media, e percentuale rispetto al numero dei casi totali nel mondo (calcolati anche sulle locazioni senza indicazione di continente)
+
+
+
+import pandas as pd
+
+# Percorso del file Excel
+file_path = r'C:\Users\aless\Desktop\owid-covid-data.xlsx'
+
+# Carica il file Excel
+df = pd.read_excel(file_path)
+
+# Specifica i nomi dei continenti da confrontare
+continent1 = 'Asia'
+continent2 = 'Europe'
+
+# Rimuovi le locazioni che non appartengono ad alcun continente
+df_cleaned = df.dropna(subset=['continent'])
+
+# Filtra i dati per i due continenti specificati
+continent1_data = df_cleaned[df_cleaned['continent'] == continent1]['total_cases']
+continent2_data = df_cleaned[df_cleaned['continent'] == continent2]['total_cases']
+
+# Calcola i descrittori statistici per i due continenti
+continent1_max = continent1_data.max()
+continent1_mean = continent1_data.mean()
+continent2_max = continent2_data.max()
+continent2_mean = continent2_data.mean()
+
+# Calcola il numero totale di casi nel mondo (inclusi quelli senza indicazione di continente)
+total_cases_world = df['total_cases'].sum()
+
+# Calcola la percentuale dei casi rispetto al numero totale dei casi nel mondo
+continent1_percentage = (continent1_data.sum() / total_cases_world) * 100
+continent2_percentage = (continent2_data.sum() / total_cases_world) * 100
+
+# Visualizza i risultati
+print(f"Descrittori statistici per {continent1}:")
+print(f"Valore massimo: {continent1_max}")
+print(f"Media: {continent1_mean}")
+print(f"Percentuale rispetto al numero totale dei casi nel mondo: {continent1_percentage}%\n")
+
+print(f"Descrittori statistici per {continent2}:")
+print(f"Valore massimo: {continent2_max}")
+print(f"Media: {continent2_mean}")
+print(f"Percentuale rispetto al numero totale dei casi nel mondo: {continent2_percentage}%")
+
+
+
+• Selezionare i dati relativi all'Italia nel 2022, e mostrare con un grafico adeguato l'evoluzione del casi totali rispetto alla data
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Percorso del file Excel
+file_path = r'C:\Users\aless\Desktop\owid-covid-data.xlsx'
+
+# Carica il file Excel e converte la colonna 'date' in formato datetime
+df = pd.read_excel(file_path, parse_dates=['date'])
+
+# Filtra i dati per l'Italia nel 2022
+italy_data_2022 = df[(df['location'] == 'Italy') & (df['date'].dt.year == 2022)]
+
+# Verifica che i dati siano stati filtrati correttamente
+print(italy_data_2022.head())
+
+# Crea il grafico dell'evoluzione dei casi totali rispetto alla data
+plt.figure(figsize=(10, 6))
+plt.plot(italy_data_2022['date'], italy_data_2022['total_cases'], marker='o', linestyle='-', color='b')
+plt.title('Evoluzione dei casi totali in Italia nel 2022')
+plt.xlabel('Data')
+plt.ylabel('Casi Totali')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+
+# Mostra il grafico
+plt.show()
+
+
+
+• Mostrare poi con un grafico adeguato il numero di nuovi casi rispetto alla data (filtrare i dati se necessario)
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Percorso del file Excel
+file_path = r'C:\Users\aless\Desktop\owid-covid-data.xlsx'
+
+# Carica il file Excel e converte la colonna 'date' in formato datetime
+df = pd.read_excel(file_path, parse_dates=['date'])
+
+# Filtra i dati per l'Italia nel 2022
+italy_data_2022 = df[(df['location'] == 'Italy') & (df['date'].dt.year == 2022)]
+
+# Verifica che i dati siano stati filtrati correttamente
+print(italy_data_2022.head())
+
+# Crea il grafico del numero di nuovi casi rispetto alla data
+plt.figure(figsize=(10, 6))
+plt.plot(italy_data_2022['date'], italy_data_2022['new_cases'], marker='o', linestyle='-', color='b')
+plt.title('Numero di nuovi casi in Italia nel 2022')
+plt.xlabel('Data')
+plt.ylabel('Nuovi Casi')
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+
+# Mostra il grafico
+plt.show()
+
+
+
+• Mostrare infine un grafico che mostra l'andamento della somma cumulativa nuovi casi del 2022, e commentare se ci sono similarità con l'andamento del numero dei casi totali
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Percorso del file Excel
+file_path = r'C:\Users\aless\Desktop\owid-covid-data.xlsx'
+
+# Carica il file Excel e converte la colonna 'date' in formato datetime
+df = pd.read_excel(file_path, parse_dates=['date'])
+
+# Filtra i dati per l'Italia nel 2022
+italy_data_2022 = df[(df['location'] == 'Italy') & (df['date'].dt.year == 2022)]
+
+# Calcola la somma cumulativa dei nuovi casi
+italy_data_2022['cumulative_new_cases'] = italy_data_2022['new_cases'].cumsum()
+
+# Verifica che i dati siano stati filtrati e calcolati correttamente
+print(italy_data_2022[['date', 'new_cases', 'cumulative_new_cases', 'total_cases']].head())
+
+# Crea il grafico dell'andamento della somma cumulativa dei nuovi casi e del numero totale dei casi
+plt.figure(figsize=(12, 6))
+plt.plot(italy_data_2022['date'], italy_data_2022['cumulative_new_cases'], marker='o', linestyle='-', color='b', label='Cumulativa Nuovi Casi')
+plt.plot(italy_data_2022['date'], italy_data_2022['total_cases'], marker='x', linestyle='-', color='r', label='Casi Totali')
+plt.title('Andamento della somma cumulativa dei nuovi casi e del numero totale dei casi in Italia nel 2022')
+plt.xlabel('Data')
+plt.ylabel('Numero di Casi')
+plt.legend()
+plt.xticks(rotation=45)
+plt.grid(True)
+plt.tight_layout()
+
+# Mostra il grafico
+plt.show()
+
+"ci aspettiamo che le due curve siano molto simili, poiché entrambe rappresentano somme cumulative di casi nel tempo."
+
+
+
+• Riguardo le nazioni di Italia, Germania e Francia, mostrare in un boxplot la differenza tra queste nazioni riguardo il numero di pazienti in terapia intensiva (Intensive Care Unit, ICU) da maggio 2022 (incluso) ad aprile 2023 (incluso), e scrivere un breve commento a riguardo
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Percorso del file Excel
+file_path = r'C:\Users\aless\Desktop\owid-covid-data.xlsx'
+
+# Carica il file Excel e converte la colonna 'date' in formato datetime
+df = pd.read_excel(file_path, parse_dates=['date'])
+
+# Filtra i dati per Italia, Germania e Francia da maggio 2022 ad aprile 2023
+start_date = '2022-05-01'
+end_date = '2023-04-30'
+countries = ['Italy', 'Germany', 'France']
+
+filtered_data = df[(df['location'].isin(countries)) & 
+                   (df['date'] >= start_date) & 
+                   (df['date'] <= end_date)]
+
+# Verifica che i dati siano stati filtrati correttamente
+print(filtered_data[['location', 'date', 'icu_patients']].head())
+
+# Crea il boxplot per il numero di pazienti in terapia intensiva
+plt.figure(figsize=(12, 6))
+filtered_data.boxplot(column='icu_patients', by='location', grid=False)
+plt.title('Numero di pazienti in terapia intensiva (ICU) da maggio 2022 ad aprile 2023')
+plt.suptitle('')
+plt.xlabel('Paese')
+plt.ylabel('Numero di pazienti in terapia intensiva')
+plt.tight_layout()
+
+# Mostra il grafico
+plt.show()
+
+"Germania e Francia mostrano mediane e IQR simili, il che potrebbe indicare condizioni pandemiche simili"
+
+
+
+• Riguardo le nazioni di Italia, Germania, Francia e Spagna nel 2023, mostrare la somma dei pazienti ospitalizzati per ognuna — se ci sono dati nulli, suggerire se può essere possibile gestirli tramite sostituzione o meno
+
+
+
+import pandas as pd
+
+# Percorso del file Excel
+file_path = r'C:\Users\aless\Desktop\owid-covid-data.xlsx'
+
+# Carica il file Excel e converte la colonna 'date' in formato datetime
+df = pd.read_excel(file_path, parse_dates=['date'])
+
+# Filtra i dati per Italia, Germania, Francia e Spagna nel 2023
+countries = ['Italy', 'Germany', 'France', 'Spain']
+filtered_data_2023 = df[(df['location'].isin(countries)) & (df['date'].dt.year == 2023)]
+
+# Verifica la presenza di dati nulli
+print(filtered_data_2023[['location', 'date', 'hosp_patients']].isnull().sum())
+
+# Suggerimento per gestire i dati nulli: riempi con il valore precedente disponibile
+filtered_data_2023['hosp_patients'] = filtered_data_2023['hosp_patients'].fillna(method='ffill')
+
+# Calcola la somma dei pazienti ospitalizzati per ciascun paese
+hosp_patients_sum = filtered_data_2023.groupby('location')['hosp_patients'].sum()
+
+# Visualizza i risultati
+print("Somma dei pazienti ospitalizzati nel 2023:")
+print(hosp_patients_sum)
+
+"Gestione dei dati nulli: fillna(method='ffill') riempie i valori nulli con l'ultimo valore disponibile. È utile quando si suppone che il valore mancante possa essere sostituito ragionevolmente con il valore precedente. In questo caso, si presume che il numero di pazienti ospitalizzati non cambi drasticamente da un giorno all'altro."
